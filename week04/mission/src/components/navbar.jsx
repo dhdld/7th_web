@@ -41,7 +41,7 @@ const Nav = styled.div`
 width: 100vw;
     display: flex;
     justify-content: space-between;
-    background-color: #2D2D2D;
+    background-color: #1e272e;
     align-items: center;
     position: sticky;
     top: 0;
@@ -75,6 +75,9 @@ const Join = styled.div`
         align-items: center;
         padding: 5px;
     :hover {
-    color: black;
+    background-color: lightcoral;
+    padding: 5px;
+    border-radius: 10px;
+    
     }
 `;

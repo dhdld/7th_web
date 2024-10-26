@@ -1,7 +1,9 @@
 import {useState} from 'react'
 import styled from 'styled-components'
+import {useNavigate} from 'react-router-dom'
 
 export default function Poster({id, coverImg, title, release_date}) {
+    const navigate = useNavigate()
     const [isHover, setIsHover] = useState(false)
     const onMouseEnter = () => {
         setIsHover(true)
@@ -10,7 +12,7 @@ export default function Poster({id, coverImg, title, release_date}) {
         setIsHover(false)
     }
     return (
-        <PosterDiv
+        <PosterDiv  onClick={()=>navigate(`/movies/${id}`)}
         onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
             <Img src={`https://image.tmdb.org/t/p/original/${coverImg}`} alt={title}/>
             {isHover && <Overlay />}
@@ -24,6 +26,7 @@ const PosterDiv = styled.div`
    width: 116px;
     justify-content: center;
     position: relative;
+    cursor: pointer;
 `;
 
 const Title = styled.p`

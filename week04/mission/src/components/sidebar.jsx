@@ -56,7 +56,7 @@ const Linkk = styled(Link)`
 `;
 
 const Nav = styled.div`
-    background-color: #2D2D2D;
+    background-color: #1e272e;
     align-items: center;
     min-width: 140px;
     height: 100vh;

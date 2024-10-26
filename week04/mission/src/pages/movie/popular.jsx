@@ -1,14 +1,10 @@
 import {useEffect, useState} from "react";
 import Poster from "./Poster";
 import styled from 'styled-components';
-import useCustomFetch from "../hooks/useCustomFetch";
+import useCustomFetch from "../../hooks/useCustomFetch";
 
-const NowPlaying = () => {
-    const { data: movies, isLoading, isError } = useCustomFetch(`/movie/now_playing?language=ko-kr&page=1`);
-    console.log(movies);
-    
-    if (isLoading) return <div>Loading...</div>;
-    if (isError) return <div>Error loading movies</div>;
+const Popular = () => {
+    const {data:movies, isLoading, isError} = useCustomFetch(`/movie/popular?language=ko-kr`)
 
     return (
         <Posters>
@@ -29,7 +25,7 @@ const NowPlaying = () => {
     );
 };
 
-export default NowPlaying;
+export default Popular;
 
 const Posters = styled.div`
    display: inline-flex;

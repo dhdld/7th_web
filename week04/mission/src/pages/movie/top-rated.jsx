@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import Poster from "./Poster";
 import styled from 'styled-components';
-import useCustomFetch from "../hooks/useCustomFetch";
+import useCustomFetch from "../../hooks/useCustomFetch";
 
 const TopRated = () => {
     const {data:movies, isLoading, isError} = useCustomFetch(`/movie/top_rated?language=ko-kr`)
