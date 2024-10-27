@@ -24,4 +24,17 @@ function validateLogin(values) {
     return validateUser(values);
 }
 
-export { validateLogin };
+function validateJoin(values) {
+    const errors = validateUser(values);
+
+    // 비밀번호 확인 유효성 검증
+    if (!values.passwordConfirm) {
+        errors.passwordConfirm = '비밀번호를 다시 입력해주세요.';
+    } else if (values.password !== values.passwordConfirm) {
+        errors.passwordConfirm = '비밀번호가 일치하지 않습니다.';
+    }
+
+    return errors;
+}
+
+export { validateLogin, validateJoin };
