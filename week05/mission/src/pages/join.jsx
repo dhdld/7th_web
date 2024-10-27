@@ -38,9 +38,7 @@ const JoinPage = () => {
                     type={'password'} {...register('passwordConfirm')} placeholder="비밀번호를 다시 입력해주세요!" />
                 {errors.passwordConfirm && <ErrMsg>{errors.passwordConfirm.message}</ErrMsg>}
 
-                <Submit
-                    type="submit"
-                >
+                <Submit type="submit">
                     회원가입
                 </Submit>
             </Form>
