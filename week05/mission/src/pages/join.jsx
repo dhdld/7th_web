@@ -1,63 +1,45 @@
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import useForm from '../hooks/useForm';
-import { validateJoin } from '../utils/validate';
+//import { validateJoin } from '../utils/validate';
+import {useForm} from 'react-hook-form'
+import * as yup from 'yup'
+import {yupResolver} from '@hookform/resolvers/yup'
 
 const JoinPage = () => {
     const navigate = useNavigate();
 
-    const join = useForm({
-        initialValue: {
-            email: '',
-            password: '',
-            passwordConfirm: '',
-        },
-        validate: validateJoin,
+    const schema = yup.object().shape({
+        email: yup.string().email().required('이메일을 반드시 입력해주세요.'),
+        password: yup.string().min(8, '비밀번호는 8자 이상이어야 합니다.').max(16, '비밀번호는 16자 이하여야 합니다.').required(),
+        passwordConfirm: yup.string().oneOf([yup.ref('password'), null], '비밀번호가 일치하지 않습니다.').required(),
     });
 
-    const handlePressJoin = () => {
-        console.log('회원가입 정보:', join.values.email, join.values.password, join.values.passwordConfirm);
-    }
+    const {register, handleSubmit, formState: {errors}} = useForm({
+        resolver: yupResolver(schema),
+    });
 
-    const onSubmit = (e) => {
-        e.preventDefault();
-        if (Object.keys(join.errors).length === 0) {
-            handlePressJoin();
-        }
+    const onSubmit = (data) => {
+        console.log(data);
     }
 
     return (
         <Container>
             <Text>회원가입</Text>
-            <Form onSubmit={onSubmit}>
+            <Form onSubmit={handleSubmit(onSubmit)}>
                 <Input 
-                    type="text" 
-                    placeholder="이메일을 입력해주세요!" 
-                    {...join.getTextInputProps('email')} 
-                />
-                {join.touched.email && join.errors.email && <ErrMsg>{join.errors.email}</ErrMsg>}
+                    type={'text'} {...register('email')} placeholder="이메일을 입력해주세요!" />
+                {errors.email && <ErrMsg>{errors.email.message}</ErrMsg>}
 
-                <Input 
-                    type="password" 
-                    placeholder="비밀번호를 입력해주세요!" 
-                    {...join.getTextInputProps('password')} 
-                />
-                {join.touched.password && join.errors.password && <ErrMsg>{join.errors.password}</ErrMsg>}
+                <Input
+                    type={'password'} {...register('password')} placeholder="비밀번호를 입력해주세요!" />
+                {errors.password && <ErrMsg>{errors.password.message}</ErrMsg>}
 
-                <Input 
-                    type="password" 
-                    placeholder="비밀번호를 다시 입력해주세요!" 
-                    {...join.getTextInputProps('passwordConfirm')} 
-                />
-                {join.touched.passwordConfirm && join.errors.passwordConfirm && <ErrMsg>{join.errors.passwordConfirm}</ErrMsg>}
+                <Input
+                    type={'password'} {...register('passwordConfirm')} placeholder="비밀번호를 다시 입력해주세요!" />
+                {errors.passwordConfirm && <ErrMsg>{errors.passwordConfirm.message}</ErrMsg>}
 
                 <Submit
                     type="submit"
-                    disabled={Object.keys(join.errors).length > 0}
-                    style={{
-                        backgroundColor: Object.keys(join.errors).length === 0 ? '#DC1767' : 'gray',
-                        cursor: Object.keys(join.errors).length === 0 ? 'pointer' : 'auto'
-                    }}
                 >
                     회원가입
                 </Submit>
@@ -117,7 +99,7 @@ const Submit = styled.button`
     padding: 7px 20px;
     border: none;
     border-radius: 8px;
-    background-color: #FCC624;
+    background-color: #DC1767;
     color: white;
     font-size: 18px;
     margin-top: 20px;
