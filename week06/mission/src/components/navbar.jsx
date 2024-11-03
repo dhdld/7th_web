@@ -1,18 +1,73 @@
-// navbar.jsx
-import {Link} from "react-router-dom";
-import styled from "styled-components";
+import { Link, useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const Navbar = () => {
+    const [user, setUser] = useState(null);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const token = localStorage.getItem('accessToken');
+            if (token) {
+                try {
+                    const response = await axios.get('http://localhost:3000/user/me', {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+                    const nickname = response.data.email.split('@')[0];
+                    setUser({ ...response.data, nickname });
+                } catch (error) {
+                    console.error('사용자 정보를 가져오는데 실패했습니다:', error);
+                    // 토큰이 유효하지 않거나 오류가 발생하면 로그아웃 처리
+                    handleLogout();
+                }
+            }
+        };
+
+        fetchUserData();
+    }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        setUser(null);
+        navigate('/');
+    };
+
     return (
         <Nav>
             <Logo><Linkk to={'/'}>YONGCHA</Linkk></Logo>
             <SignDiv>
-            <Login><Linkk to={'/login'}>로그인</Linkk></Login>
-            <Join><Linkk to={'/signup'}>회원가입</Linkk></Join>
+                {user ? (
+                    <>
+                        <UserEmail>{user.nickname}님 반갑습니다.</UserEmail>
+                        <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
+                    </>
+                ) : (
+                    <>
+                        <Login><Linkk to={'/login'}>로그인</Linkk></Login>
+                        <Join><Linkk to={'/signup'}>회원가입</Linkk></Join>
+                    </>
+                )}
             </SignDiv>
         </Nav>
     );
 };
+
+const UserEmail = styled.span`
+    color: #fff;
+    font-size: 1rem;
+`;
+
+const LogoutButton = styled.button`
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+`;
 
 export default Navbar;
 
