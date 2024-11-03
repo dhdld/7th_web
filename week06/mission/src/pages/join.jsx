@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import {useForm} from 'react-hook-form'
 import * as yup from 'yup'
 import {yupResolver} from '@hookform/resolvers/yup'
+import axios from 'axios';
 
 const JoinPage = () => {
     const navigate = useNavigate();
@@ -18,9 +19,30 @@ const JoinPage = () => {
         resolver: yupResolver(schema),
     });
 
-    const onSubmit = (data) => {
-        console.log(data);
-    }
+    const onSubmit = async (data) => {
+        try {
+            const response = await axios.post('http://localhost:3000/auth/register', {
+                email: data.email,
+                password: data.password,
+                passwordCheck: data.passwordConfirm
+            });
+    
+            console.log('회원가입 성공:', response.data);
+            navigate('/login'); // 회원가입 성공 시 로그인 페이지로 리디렉션
+    
+        } catch (error) {
+            if (error.response) {
+                // 서버에서 반환한 에러
+                console.error('회원가입 실패:', error.response.data.message);
+            } else if (error.request) {
+                // 요청이 보내졌으나 응답이 없음
+                console.error('서버 응답이 없습니다.');
+            } else {
+                // 요청 설정 중 에러 발생
+                console.error('오류 발생:', error.message);
+            }
+        }
+    };
 
     return (
         <Container>

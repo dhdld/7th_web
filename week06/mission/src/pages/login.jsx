@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import useForm from '../hooks/useForm';
 import { validateLogin } from '../utils/validate';
+import axios from 'axios';
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -14,8 +15,31 @@ const LoginPage = () => {
         validate: validateLogin
     });
 
-    const handlePressLogin = () => {
-        console.log('로그인 정보:', login.values.email, login.values.password);
+    const handlePressLogin = async () => {
+        try {
+            const response = await axios.post('http://localhost:3000/auth/login', {
+                email: login.values.email,
+                password: login.values.password,
+            });
+
+            console.log('로그인 성공:', response.data);
+            localStorage.setItem('accessToken', response.data.accessToken);
+            localStorage.setItem('refreshToken', response.data.refreshToken);
+
+            navigate('/'); 
+
+        } catch (error) {
+            if (error.response) {
+                // 서버에서 반환한 에러
+                console.error('로그인 실패:', error.response.data.message);
+            } else if (error.request) {
+                // 요청이 보내졌으나 응답이 없음
+                console.error('서버 응답이 없습니다.');
+            } else {
+                // 요청 설정 중 에러 발생
+                console.error('오류 발생:', error.message);
+            }
+        }
     };
 
     const onSubmit = (e) => {
