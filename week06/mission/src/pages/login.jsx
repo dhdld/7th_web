@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import useForm from '../hooks/useForm';
 import { validateLogin } from '../utils/validate';
-import axios from 'axios';
+import api from '../apis/tokenAPI';
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -17,7 +17,7 @@ const LoginPage = () => {
 
     const handlePressLogin = async () => {
         try {
-            const response = await axios.post('http://localhost:3000/auth/login', {
+            const response = await api.post('/auth/login', {
                 email: login.values.email,
                 password: login.values.password,
             });

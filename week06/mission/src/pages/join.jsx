@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import {useForm} from 'react-hook-form'
 import * as yup from 'yup'
 import {yupResolver} from '@hookform/resolvers/yup'
-import axios from 'axios';
+import api from '../apis/tokenAPI';
 
 const JoinPage = () => {
     const navigate = useNavigate();
@@ -21,7 +21,7 @@ const JoinPage = () => {
 
     const onSubmit = async (data) => {
         try {
-            const response = await axios.post('http://localhost:3000/auth/register', {
+            const response = await api.post('/auth/register', {
                 email: data.email,
                 password: data.password,
                 passwordCheck: data.passwordConfirm
