@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import useCustomFetch from '../hooks/useCustomFetch';
 import * as S from './style/search.style'
-import Poster from './Card/Poster';
 import SearchMovieList from './movie/search-movie-list';
 
 const SearchPage = () => {
@@ -52,15 +50,7 @@ export default SearchPage;
 const Container = styled.div`
     display: flex;
     flex-direction: column;
-    align-items: center;
     padding: 2rem;
-`;
-
-const SearchContainer = styled.div`
-    display: flex;
-    align-items: center;
-    width: 100%;
-    max-width: 500px;
 `;
 
 const SearchInput = styled.input`

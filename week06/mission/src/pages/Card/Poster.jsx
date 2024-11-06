@@ -23,7 +23,7 @@ export default function Poster({id, coverImg, title, release_date}) {
 }
 
 const PosterDiv = styled.div`
-   width: 116px;
+width: 120px;
     justify-content: center;
     position: relative;
     cursor: pointer;

@@ -1,8 +1,8 @@
 import Poster from '../Card/Poster'; 
 import { useSearchParams } from 'react-router-dom';
 import useCustomFetch from '../../hooks/useCustomFetch';
-import * as S from '../style/search.style'
-import CardSkeleton from '../Card/Skeleton/card-skeleton';
+import * as S from '../style/search.style.js'
+import CardListSkeleton from '../Card/Skeleton/card-list-skeleton.jsx';
 
 const SearchMovieList = () => {
     const [searchParams, setSearchParams] = useSearchParams({
@@ -25,7 +25,9 @@ const SearchMovieList = () => {
 
     if(isLoading){
         return (
-            <CardSkeleton />
+            <S.MovieGridContainer>
+            <CardListSkeleton />
+        </S.MovieGridContainer>
         )
     }
 

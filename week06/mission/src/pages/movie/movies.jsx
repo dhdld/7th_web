@@ -18,7 +18,7 @@ const MoviesPage = () => {
     }, []);
 
     return (
-<div className='posters'>
+<div>
             { movies.data?.results.map((movie) => (
                 <Poster key={movie.id} id={movie.id} coverImg={movie.poster_path} title={movie.original_title} 
                 rating={movie.vote_average} overview={movie.overview} />

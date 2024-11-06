@@ -5,8 +5,9 @@ const SearchContainer = styled.div`
     justify-content: center;
 
     input {
-    
+        flex:1;
     }
+
     button {
     width: 80px;
     background-color: #f82e62;
@@ -17,10 +18,10 @@ const SearchContainer = styled.div`
 
 const MovieGridContainer = styled.div`
     margin-top: 30px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap:20px;
 `
 
-export {SearchContainer, MovieGridContainer}
+export { SearchContainer, MovieGridContainer }
 
