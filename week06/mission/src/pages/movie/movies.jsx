@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
-import Poster from "./Poster";
+import Poster from "../Card/Poster";
 
 const MoviesPage = () => {
     const [movies, setMovies] = useState([])

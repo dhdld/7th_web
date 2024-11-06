@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import Poster from "./Poster";
+import Poster from "../Card/Poster";
 import styled from 'styled-components';
 import useCustomFetch from "../../hooks/useCustomFetch";
 
