@@ -5,7 +5,6 @@ import CardListSkeleton from '../Card/Skeleton/card-list-skeleton.jsx';
 import { useGetMovies } from "../../hooks/queries/useGetMovies.js";
 import { useQuery } from "@tanstack/react-query";
 
-
 const NowPlaying = () => {
     const {data:movies, isPending, isError} = useQuery({
         queryFn: ()=> useGetMovies({category:'now_playing', pageParam:1}),

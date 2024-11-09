@@ -1,7 +1,8 @@
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
-import { useEffect, useState } from "react";
-import useCustomFetch from "../../hooks/useCustomFetch";
+import { useGetMovieCredit } from "../../hooks/queries/useGetMovies";
+import { useGetMovieDetail } from "../../hooks/queries/useGetMovies";
+import { useQuery } from "@tanstack/react-query";
 
 const DetailPage = () => {
   const { id } = useParams();
@@ -10,13 +11,21 @@ const DetailPage = () => {
     data: credits,
     isLoading: creditsLoading,
     isError: creditsError,
-  } = useCustomFetch(`/movie/${id}/credits?language=ko-kr`);
+  } = useQuery({
+    queryFn: ()=> useGetMovieCredit({movieId: id}),
+    queryKey: ['movie','credit'],
+    cacheTime: 100000,
+})
 
   const {
     data: movie,
     isLoading: movieLoading,
     isError: movieError,
-  } = useCustomFetch(`/movie/${id}?language=ko-KR`);
+  } = useQuery({
+    queryFn: ()=> useGetMovieDetail({movieId: id}),
+    queryKey: ['movie','info'],
+    cacheTime: 100000,
+})
 
   console.log(movie);
 
@@ -39,7 +48,7 @@ const DetailPage = () => {
         />
             <MovieInfoOverlay>
       <Title>{movie.title}</Title>
-      <Rating>평균 {(movie.vote_average).toFixed(1)}</Rating>
+      <Rating>평균 {(movie.vote_average)}</Rating>
       <ReleaseDate>{new Date(movie.release_date).getFullYear()}</ReleaseDate>
       <Runtime>{movie.runtime}분</Runtime>
       <Tagline>{movie.tagline}</Tagline>
