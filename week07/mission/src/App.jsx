@@ -1,6 +1,8 @@
 import './App.css'
 
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import HomePage from "./pages/home.jsx";
 import NotFound from "./pages/not-found.jsx";
@@ -9,7 +11,6 @@ import LoginPage from "./pages/login.jsx";
 import JoinPage from "./pages/join.jsx";
 import SearchPage from "./pages/search.jsx";
 
-import Movies from "./pages/movie/movies.jsx";
 import CategoryPage from "./pages/movie/category.jsx";
 import NowPlaying from './pages/movie/now-playing.jsx';
 import Popular from './pages/movie/popular.jsx';
@@ -68,8 +69,15 @@ const router = createBrowserRouter([
 
 ])
 
+const queryClient = new QueryClient()
+
 function App() {
-    return <RouterProvider router={router}/>
+    return (
+        <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router}/>
+            <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
+        )
 }
 
 export default App

@@ -1,10 +1,23 @@
-import {useEffect, useState} from "react";
 import Poster from "../Card/Poster";
 import styled from 'styled-components';
-import useCustomFetch from "../../hooks/useCustomFetch";
+import { useGetMovies } from "../../hooks/queries/useGetMovies.js";
+import { useQuery } from "@tanstack/react-query";
+import * as S from '../style/search.style.js'
+import CardListSkeleton from '../Card/Skeleton/card-list-skeleton.jsx';
 
 const UpComing = () => {
-    const {data:movies, isLoading, isError} = useCustomFetch(`/movie/upcoming?language=ko-kr`)
+    const {data:movies, isPending, isError} = useQuery({
+        queryFn: ()=> useGetMovies({category:'upcoming', pageParam:1}),
+        queryKey: ['movies','upcoming'],
+        cacheTime: 100000,
+    })
+    console.log(movies)
+    
+    if (isPending) return (
+        <S.MovieGridContainer>
+        <CardListSkeleton />
+    </S.MovieGridContainer>
+    );
 
     return (
         <Posters>
