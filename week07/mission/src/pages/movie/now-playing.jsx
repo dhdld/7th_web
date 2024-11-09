@@ -2,15 +2,34 @@ import Poster from "../Card/Poster";
 import styled from 'styled-components';
 import * as S from '../style/search.style.js'
 import CardListSkeleton from '../Card/Skeleton/card-list-skeleton.jsx';
-import { useGetMovies } from "../../hooks/queries/useGetMovies.js";
-import { useQuery } from "@tanstack/react-query";
+import { useGetInfiniteMovies } from "../../hooks/queries/useGetInfiniteMovies.js";
+import {useInView} from "react-intersection-observer";
+import { useEffect } from "react";
+import {ClipLoader} from "react-spinners";
 
 const NowPlaying = () => {
-    const {data:movies, isPending, isError} = useQuery({
-        queryFn: ()=> useGetMovies({category:'now_playing', pageParam:1}),
-        queryKey: ['movies','now_playing'],
-        cacheTime: 100000,
+
+    const {data:movies,
+        isLoading,
+        isFetching,
+        hasNextPage,
+        isPending,
+        fetchNextPage,
+        isFetchNextPage,
+        error,
+        isError
+    } = useGetInfiniteMovies('now_playing')
+
+    const {ref, inView} = useInView({
+        threshold: 0,
     })
+
+    useEffect(()=>{
+        if(inView){
+            !isFetching && hasNextPage && fetchNextPage();
+        }
+    }, [inView, isFetching, hasNextPage, fetchNextPage])
+
     console.log(movies)
     
     if (isPending) return (
@@ -22,21 +41,28 @@ const NowPlaying = () => {
     if (isError) return <div>Error loading movies</div>;
 
     return (
+        <>
         <Posters>
-            {movies?.results?.length > 0 ? (
-                movies.results.map((movie) => (
+            {movies?.pages
+                ?.map(page=>page.results)
+                ?.flat()
+                ?.map((movie, _)=>(
                     <Poster 
-                        key={movie.id} 
-                        id={movie.id} 
-                        coverImg={movie.poster_path} 
-                        title={movie.title} 
-                        release_date={movie.release_date} 
-                    />
-                ))
-            ) : (
-                <div>Loading...</div>
+                    key={movie.id} 
+                    id={movie.id} 
+                    coverImg={movie.poster_path} 
+                    title={movie.title} 
+                    release_date={movie.release_date} 
+                />
+                )
             )}
+            {isFetching && <CardListSkeleton />}
+            <div ref={ref}>
+            {isFetching && <ClipLoader color="#fff" />}
+        </div>
         </Posters>
+        
+        </>
     );
 };
 
