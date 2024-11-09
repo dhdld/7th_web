@@ -4,48 +4,40 @@ import * as S from '../style/search.style.js'
 import CardListSkeleton from '../Card/Skeleton/card-list-skeleton.jsx';
 import { useGetInfiniteMovies } from "../../hooks/queries/useGetInfiniteMovies.js";
 import {useInView} from "react-intersection-observer";
-import { useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {ClipLoader} from "react-spinners";
+import axiosInstance from "../../apis/axiosInstance.jsx";
+import { useLocation } from "react-router-dom";
+import Pagination from "./Pagination.jsx";
 
 const NowPlaying = () => {
-    const {data:movies,
-        isLoading,
-        isFetching,
-        hasNextPage,
-        isPending,
-        fetchNextPage,
-        isFetchNextPage,
-        error,
-        isError
-    } = useGetInfiniteMovies('now_playing')
+    const [loading, setLoading] = useState(true)
+    const [movies, setMovies] = useState([])
+    const [page, setPage] = useState(1)
+    const totalPage = 100 // 100으로 제한
+    const location = useLocation()
 
-    const {ref, inView} = useInView({
-        threshold: 0,
-    })
+    const getMovies = async () => {
+        const { data } = await axiosInstance.get(`/movie/now_playing?language=ko-kr&page=${page}`)
+        setMovies(data.results)
+        setLoading(false)
+    }
 
     useEffect(()=>{
-        if(inView){
-            !isFetching && hasNextPage && fetchNextPage();
-        }
-    }, [inView, isFetching, hasNextPage, fetchNextPage])
+        getMovies()
+        setLoading(false)
+    }, [page])
 
-    console.log(movies)
-    
-    if (isPending) return (
-        <S.MovieGridContainer>
-        <CardListSkeleton />
-    </S.MovieGridContainer>
-    );
-
-    if (isError) return <div>Error loading movies</div>;
+    useEffect(()=>{
+        getMovies()
+        if(location.state !== null && location.state.page)
+            setPage(location.state.page)
+    }, [])
 
     return (
-        <>
+        <Container>
         <Posters>
-            {movies?.pages
-                ?.map(page=>page.results)
-                ?.flat()
-                ?.map((movie, _)=>(
+            {movies?.map((movie)=>(
                     <Poster 
                     key={movie.id} 
                     id={movie.id} 
@@ -55,16 +47,16 @@ const NowPlaying = () => {
                 />
                 )
             )}
-            {isFetching && <CardListSkeleton />}
-            <div ref={ref}>
-            {isFetching && <ClipLoader color="#fff" />}
-        </div>
         </Posters>
-        </>
+        <Pagination setPage={setPage} current={page} total={totalPage} />
+        </Container>
     );
 };
 
 export default NowPlaying;
+
+const Container = styled.div`
+`
 
 const Posters = styled.div`
    display: inline-flex;
