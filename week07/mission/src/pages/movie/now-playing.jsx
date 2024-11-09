@@ -6,38 +6,36 @@ import { useGetInfiniteMovies } from "../../hooks/queries/useGetInfiniteMovies.j
 import {useInView} from "react-intersection-observer";
 import { useState, useEffect, useRef } from "react";
 import {ClipLoader} from "react-spinners";
-import axiosInstance from "../../apis/axiosInstance.jsx";
 import { useLocation } from "react-router-dom";
 import Pagination from "./Pagination.jsx";
+import { useGetMovies } from "../../hooks/queries/useGetMovies.js";
+import { useQuery } from "@tanstack/react-query";
 
 const NowPlaying = () => {
-    const [loading, setLoading] = useState(true)
-    const [movies, setMovies] = useState([])
     const [page, setPage] = useState(1)
     const totalPage = 100 // 100으로 제한
     const location = useLocation()
 
-    const getMovies = async () => {
-        const { data } = await axiosInstance.get(`/movie/now_playing?language=ko-kr&page=${page}`)
-        setMovies(data.results)
-        setLoading(false)
-    }
+    const { data:movies, isPending, isError } = useQuery({
+        queryKey: ['movies', 'now_playing', page],
+        queryFn: () => useGetMovies({ category: 'now_playing', pageParam: page }),
+    });
 
     useEffect(()=>{
-        getMovies()
-        setLoading(false)
-    }, [page])
-
-    useEffect(()=>{
-        getMovies()
         if(location.state !== null && location.state.page)
             setPage(location.state.page)
     }, [])
 
+    if (isPending) return (
+        <S.MovieGridContainer>
+        <CardListSkeleton />
+    </S.MovieGridContainer>
+    );
+
     return (
-        <Container>
+        <div>
         <Posters>
-            {movies?.map((movie)=>(
+            {movies?.results.map((movie)=>(
                     <Poster 
                     key={movie.id} 
                     id={movie.id} 
@@ -49,14 +47,11 @@ const NowPlaying = () => {
             )}
         </Posters>
         <Pagination setPage={setPage} current={page} total={totalPage} />
-        </Container>
+        </div>
     );
 };
 
 export default NowPlaying;
-
-const Container = styled.div`
-`
 
 const Posters = styled.div`
    display: inline-flex;
