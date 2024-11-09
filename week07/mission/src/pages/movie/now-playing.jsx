@@ -8,7 +8,6 @@ import { useEffect } from "react";
 import {ClipLoader} from "react-spinners";
 
 const NowPlaying = () => {
-
     const {data:movies,
         isLoading,
         isFetching,
@@ -61,7 +60,6 @@ const NowPlaying = () => {
             {isFetching && <ClipLoader color="#fff" />}
         </div>
         </Posters>
-        
         </>
     );
 };
