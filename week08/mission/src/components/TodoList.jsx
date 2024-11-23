@@ -62,12 +62,12 @@ function TodoList() {
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
-        <button onClick={addTodo}>Todo 생성</button>
+        <button onClick={addTodo} disabled={loading || error}>Todo 생성</button>
       </InputDiv>
 
       <>
         {loading && <StatusMSG>Loading...</StatusMSG>}
-        {error && <StatusMSG>Error: {error.message}</StatusMSG>}
+        {error && <StatusMSG>에러가 발생했습니다.</StatusMSG>}
         {!loading && !error && todos && (
           todos.map((todo) => (
             <TodoItem
@@ -89,9 +89,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  
 `
-
 const InputDiv = styled.div`
   display: flex;
   flex-direction: column;
@@ -100,13 +98,14 @@ const InputDiv = styled.div`
 
   input {
     margin-bottom: 10px;
-    padding: 8px;
+    padding: 10px;
     font-size: 16px;
+    border-radius: 10px;
   }
-
   button {
     padding: 8px;
     font-size: 16px;
+    border-radius: 10px;
     cursor: pointer;
   }
 `;
@@ -114,4 +113,5 @@ const InputDiv = styled.div`
 const StatusMSG = styled.div`
   margin-top: 100px;
   align-items: center;
+  font-size: 20px;
 `
