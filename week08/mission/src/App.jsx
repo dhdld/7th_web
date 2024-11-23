@@ -1,15 +1,16 @@
-import { useState } from 'react'
-import TodoList from './components/TodoList'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import TodoList from './components/TodoList';
+import TodoDetail from './components/TodoDetail';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <h1>UMC TodoList</h1>
-      <TodoList />
-    </>
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<TodoList />} />
+        <Route path="/todo/:id" element={<TodoDetail />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;

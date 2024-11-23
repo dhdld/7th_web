@@ -49,6 +49,7 @@ function TodoList() {
 
   return (
     <Container>
+      <h1>UMC TodoList</h1>
       <InputDiv>
         <input
           type="text"
@@ -65,7 +66,7 @@ function TodoList() {
         <button onClick={addTodo} disabled={loading || error}>Todo 생성</button>
       </InputDiv>
 
-      <>
+      <TodoDiv>
         {loading && <StatusMSG>Loading...</StatusMSG>}
         {error && <StatusMSG>에러가 발생했습니다.</StatusMSG>}
         {!loading && !error && todos && (
@@ -78,7 +79,7 @@ function TodoList() {
             />
           ))
         )}
-      </>
+      </TodoDiv>
     </Container>
   );
 }
@@ -109,6 +110,12 @@ const InputDiv = styled.div`
     cursor: pointer;
   }
 `;
+
+const TodoDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+  width:60%;
+`
 
 const StatusMSG = styled.div`
   margin-top: 100px;
