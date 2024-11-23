@@ -1,55 +1,51 @@
 import React, { useState } from 'react';
-import useFetch from '../hooks/useFetch'; // Custom Hook import
+import styled from 'styled-components';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import TodoItem from './TodoItem';
-import styled from 'styled-components';
 
 function TodoList() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const { data: todos, error, loading, refetch } = useFetch('http://localhost:3000/todo');
+  const queryClient = useQueryClient();
 
-  const addTodo = async () => {
+  // GET 요청: Todo 리스트 가져오기
+  const { data: todos, error, isLoading } = useQuery({
+    queryKey: ['todos'],
+    queryFn: async () => {
+      const response = await axios.get('http://localhost:3000/todo');
+      return response.data[0];
+    },
+  });
+
+  // POST 요청: Todo 생성
+  const addTodoMutation = useMutation({
+    mutationFn: async (newTodo) => {
+      return axios.post('http://localhost:3000/todo', newTodo);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['todos'] }); // todos 쿼리 갱신
+    },
+  });
+
+  // Todo 추가 핸들러
+  const handleAddTodo = () => {
     if (!title || !content) return;
-    try {
-      await axios.post('http://localhost:3000/todo', {
-        title,
-        content,
-        checked: false,
-      });
-      setTitle('');
-      setContent('');
-      refetch(); 
-    } catch (error) {
-      console.error('Error adding todo:', error);
-    }
+    addTodoMutation.mutate({
+      title,
+      content,
+      checked: false,
+    });
+    setTitle('');
+    setContent('');
   };
 
-  const updateTodo = async (id, updatedTitle, updatedContent, updatedChecked) => {
-    try {
-      await axios.patch(`http://localhost:3000/todo/${id}`, {
-        title: updatedTitle,
-        content: updatedContent,
-        checked: updatedChecked,
-      });
-      refetch();
-    } catch (error) {
-      console.error('Error updating todo:', error);
-    }
-  };
-
-  const deleteTodo = async (id) => {
-    try {
-      await axios.delete(`http://localhost:3000/todo/${id}`);
-      refetch();
-    } catch (error) {
-      console.error('Error deleting todo:', error);
-    }
-  };
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
 
   return (
     <Container>
-      <h1>UMC TodoList</h1>
+      <h1>UMC Todolist</h1>
       <InputDiv>
         <input
           type="text"
@@ -63,23 +59,15 @@ function TodoList() {
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
-        <button onClick={addTodo} disabled={loading || error}>Todo 생성</button>
+        <button onClick={handleAddTodo} disabled={addTodoMutation.isLoading}>
+          {addTodoMutation.isLoading ? 'Creating...' : 'Todo 생성'}
+        </button>
       </InputDiv>
-
-      <TodoDiv>
-        {loading && <StatusMSG>Loading...</StatusMSG>}
-        {error && <StatusMSG>에러가 발생했습니다.</StatusMSG>}
-        {!loading && !error && todos && (
-          todos.map((todo) => (
-            <TodoItem
-              key={todo.id}
-              todo={todo}
-              onUpdate={updateTodo}
-              onDelete={deleteTodo}
-            />
-          ))
-        )}
-      </TodoDiv>
+      <div>
+        {todos.map((todo) => (
+          <TodoItem key={todo.id} todo={todo} />
+        ))}
+      </div>
     </Container>
   );
 }
@@ -90,35 +78,28 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-`
+`;
+
 const InputDiv = styled.div`
   display: flex;
   flex-direction: column;
-  margin-bottom: 20px;
-  width:60%;
+  margin: 10px 0 50px;
+  width: 60%;
 
   input {
     margin-bottom: 10px;
-    padding: 10px;
+    padding: 8px;
     font-size: 16px;
-    border-radius: 10px;
   }
+
   button {
     padding: 8px;
     font-size: 16px;
-    border-radius: 10px;
     cursor: pointer;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
   }
 `;
-
-const TodoDiv = styled.div`
-  display: flex;
-  flex-direction: column;
-  width:60%;
-`
-
-const StatusMSG = styled.div`
-  margin-top: 100px;
-  align-items: center;
-  font-size: 20px;
-`
