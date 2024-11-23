@@ -1,39 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import useFetch from '../hooks/useFetch'; // Custom Hook import
 import axios from 'axios';
 import TodoItem from './TodoItem';
 import styled from 'styled-components';
 
 function TodoList() {
-  const [todos, setTodos] = useState([]);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-
-  // 초기 데이터 로드
-  useEffect(() => {
-    fetchTodos();
-  }, []);
-
-  const fetchTodos = async () => {
-    try {
-      const response = await axios.get('http://localhost:3000/todo');
-      setTodos(response.data[0]);
-      console.log(response.data[0]);
-    } catch (error) {
-      console.error('Error fetching todos:', error);
-    }
-  };
+  const { data: todos, error, loading, refetch } = useFetch('http://localhost:3000/todo');
 
   const addTodo = async () => {
     if (!title || !content) return;
     try {
-      const response = await axios.post('http://localhost:3000/todo', {
+      await axios.post('http://localhost:3000/todo', {
         title,
         content,
         checked: false,
       });
-      setTodos([...todos, response.data]);
       setTitle('');
       setContent('');
+      refetch(); 
     } catch (error) {
       console.error('Error adding todo:', error);
     }
@@ -46,7 +32,7 @@ function TodoList() {
         content: updatedContent,
         checked: updatedChecked,
       });
-      fetchTodos(); // 최신 데이터를 다시 가져옴
+      refetch();
     } catch (error) {
       console.error('Error updating todo:', error);
     }
@@ -55,14 +41,14 @@ function TodoList() {
   const deleteTodo = async (id) => {
     try {
       await axios.delete(`http://localhost:3000/todo/${id}`);
-      fetchTodos();
+      refetch();
     } catch (error) {
       console.error('Error deleting todo:', error);
     }
   };
 
   return (
-    <div>
+    <Container>
       <InputDiv>
         <input
           type="text"
@@ -78,26 +64,39 @@ function TodoList() {
         />
         <button onClick={addTodo}>Todo 생성</button>
       </InputDiv>
-      <div>
-        {todos.map((todo) => (
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            onUpdate={updateTodo}
-            onDelete={deleteTodo}
-          />
-        ))}
-      </div>
-    </div>
+
+      <>
+        {loading && <StatusMSG>Loading...</StatusMSG>}
+        {error && <StatusMSG>Error: {error.message}</StatusMSG>}
+        {!loading && !error && todos && (
+          todos.map((todo) => (
+            <TodoItem
+              key={todo.id}
+              todo={todo}
+              onUpdate={updateTodo}
+              onDelete={deleteTodo}
+            />
+          ))
+        )}
+      </>
+    </Container>
   );
 }
 
 export default TodoList;
 
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+`
+
 const InputDiv = styled.div`
   display: flex;
   flex-direction: column;
   margin-bottom: 20px;
+  width:60%;
 
   input {
     margin-bottom: 10px;
@@ -111,3 +110,8 @@ const InputDiv = styled.div`
     cursor: pointer;
   }
 `;
+
+const StatusMSG = styled.div`
+  margin-top: 100px;
+  align-items: center;
+`

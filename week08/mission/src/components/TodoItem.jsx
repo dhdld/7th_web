@@ -58,6 +58,7 @@ const ItemContainer = styled.div`
   display: flex;
   align-items: center;
   padding: 10px;
+  width: 60%;
 `;
 
 const CheckboxContainer = styled.div`
