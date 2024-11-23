@@ -93,7 +93,7 @@ const Linkk = styled(Link)`
 `;
 
 const Nav = styled.div`
-width: 100vw;
+    width: 100vw;
     display: flex;
     justify-content: space-between;
     background-color: #1e272e;
@@ -101,11 +101,11 @@ width: 100vw;
     position: sticky;
     top: 0;
     z-index: 1;
-    padding: 10px;
+    padding: 12px;
 `;
 
 const SignDiv = styled.div`
-    margin-right: 40px;
+    margin-right: 60px;
     font-size: 15px;
     font-weight: bold;
     color: white;
@@ -114,25 +114,19 @@ const SignDiv = styled.div`
 `;
 
 const Login = styled.div`
-margin-right: 20px;
-padding: 5px;
-border-radius: 10px;
-:hover {
-background-color: #DC1767;
-padding: 5px;
-border-radius: 10px;
-}
+    margin-right: 20px;
+    padding: 8px;
+    border-radius: 7px;
+    &:hover {
+    background-color: black;
+    }
 `;
 
 const Join = styled.div`
-        background-color: #DC1767;
-        border-radius: 10px;
-        align-items: center;
-        padding: 5px;
-    :hover {
+    background-color: #DC1767;
+    border-radius: 7px;
+    padding: 8px;
+    &:hover {
     background-color: lightcoral;
-    padding: 5px;
-    border-radius: 10px;
-    
     }
 `;
