@@ -3,24 +3,37 @@ import styled from 'styled-components'
 import { incrementAmount, decrementAmount, clearCart }  from '../redux/cartSlice'
 import { selectTotalCartQuantity, selectTotalPrice, isCartEmpty } from '../redux/cartSlice'
 import { CartIcon, ChevronDown, ChevronUp } from '../constants/icons'
+import { openModal, closeModal } from '../redux/modalSlice'
 
 function Playlist() {
     const playlist = useSelector(state => state.playlist);
     const totalCartQuantity = useSelector(selectTotalCartQuantity);
     const totalPrice = useSelector(selectTotalPrice);
     const cartEmpty = useSelector(isCartEmpty);
+    const showModal = useSelector(state => state.modal.showModal);
     const dispatch = useDispatch();
+
+    const handleClearCart = () => {
+        dispatch(openModal());  // 모달 열기
+    };
+    const confirmClearCart = () => {
+        dispatch(clearCart());
+        dispatch(closeModal());  // 모달 닫기
+    };
+    const cancelClearCart = () => {
+        dispatch(closeModal());  // 모달 닫기
+    };
 
     return (
         <>
         <Header>
-        <h2>UMC PlayList</h2>
-        <Cart>
-            <Carticon>
-                <CartIcon />
-            </Carticon>
-        <TotalCnt>{totalCartQuantity}</TotalCnt>
-        </Cart>
+            <h2>UMC PlayList</h2>
+            <Cart>
+                <Carticon>
+                    <CartIcon />
+                </Carticon>
+            <TotalCnt>{totalCartQuantity}</TotalCnt>
+            </Cart>
         </Header>
         <Body>
         {cartEmpty ? <p>고객님이 좋아하는 음반을 담아보세요~!</p>
@@ -44,12 +57,22 @@ function Playlist() {
         ))}
         <hr />
         <PriceDiv>
-        <p>총 가격 </p>
-        <p>￦ {totalPrice}</p>
+            <p>총 가격 </p>
+            <p>￦ {totalPrice}</p>
         </PriceDiv>
-    <ClearBtn onClick={() => dispatch(clearCart())}>장바구니 초기화</ClearBtn>
+
+        <ClearBtn onClick={() => handleClearCart()}>장바구니 초기화</ClearBtn>
         </>
         }
+        {showModal && (
+                <Modal>
+                    <ModalContent>
+                        <h4>담아두신 모든 음반을 삭제하시겠습니까?</h4>
+                        <YesBtn onClick={confirmClearCart}>네</YesBtn>
+                        <NoBtn onClick={cancelClearCart}>아니요</NoBtn>
+                    </ModalContent>
+                </Modal>
+            )}
         </Body>
         </>
     );
@@ -158,6 +181,51 @@ const ClearBtn = styled.button`
     cursor: pointer;
     margin-top: 20px;
     margin-bottom: 100px;
+    &:hover {
+        background-color: #FFB3B3;
+    }
+`
+
+const Modal = styled.div`
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`
+const ModalContent = styled.div`
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    width: 320px;
+`
+const YesBtn = styled.button`
+    margin-right: 40px;
+    background-color: white;
+    color: blue;
+    border: blue solid 1px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 45px;
+    height: 27px;
+    &:hover {
+        background-color: #B3B3FF;
+    }
+`
+const NoBtn = styled.button`
+    margin-left: 40px;
+    background-color: white;
+    color: red;
+    border: red solid 1px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 60px;
+    height: 27px;
     &:hover {
         background-color: #FFB3B3;
     }
