@@ -1,82 +1,84 @@
-import { useSelector, useDispatch } from 'react-redux'
-import styled from 'styled-components'
-import { incrementAmount, decrementAmount, clearCart }  from '../redux/cartSlice'
-import { selectTotalCartQuantity, selectTotalPrice, isCartEmpty } from '../redux/cartSlice'
-import { CartIcon, ChevronDown, ChevronUp } from '../constants/icons'
-import { openModal, closeModal } from '../redux/modalSlice'
+import styled from 'styled-components';
+import useStore from '../store/useStore';
+import { CartIcon, ChevronDown, ChevronUp } from '../constants/icons';
 
 function Playlist() {
-    const playlist = useSelector(state => state.playlist);
-    const totalCartQuantity = useSelector(selectTotalCartQuantity);
-    const totalPrice = useSelector(selectTotalPrice);
-    const cartEmpty = useSelector(isCartEmpty);
-    const showModal = useSelector(state => state.modal.showModal);
-    const dispatch = useDispatch();
+    const {
+        cart: { cartItems, amount, total },
+        modal: { isOpen },
+        increase,
+        decrease,
+        clearCart,
+        openModal,
+        closeModal,
+    } = useStore();
 
     const handleClearCart = () => {
-        dispatch(openModal());  // 모달 열기
+        openModal();
     };
+
     const confirmClearCart = () => {
-        dispatch(clearCart());
-        dispatch(closeModal());  // 모달 닫기
-    };
-    const cancelClearCart = () => {
-        dispatch(closeModal());  // 모달 닫기
+        clearCart();
+        closeModal();
     };
 
     return (
         <>
-        <Header>
-            <h2>UMC PlayList</h2>
-            <Cart>
-                <Carticon>
-                    <CartIcon />
-                </Carticon>
-            <TotalCnt>{totalCartQuantity}</TotalCnt>
-            </Cart>
-        </Header>
-        <Body>
-        {cartEmpty ? <p>고객님이 좋아하는 음반을 담아보세요~!</p>
-        :
-        <>
-        <h2>당신이 선택한 음반</h2>
-        
-        {playlist.map(song => (
-            <Music key={song.id}>
-                <Img src={song.img} alt={song.title} />
-                <Info>
-                <Title>{song.title} | {song.singer} </Title>
-                <Price>￦ {song.price}</Price> 
-                 </Info> 
-                 <CountDiv>
-                <UpdownBtn onClick={() => dispatch(incrementAmount(song.id))}><ChevronUp /></UpdownBtn>
-                 {song.amount}
-                <UpdownBtn onClick={() => dispatch(decrementAmount(song.id))}><ChevronDown /></UpdownBtn>
-                </CountDiv>
-            </Music>
-        ))}
-        <hr />
-        <PriceDiv>
-            <p>총 가격 </p>
-            <p>￦ {totalPrice}</p>
-        </PriceDiv>
-
-        <ClearBtn onClick={() => handleClearCart()}>장바구니 초기화</ClearBtn>
-        </>
-        }
-        {showModal && (
-                <Modal>
-                    <ModalContent>
-                        <h4>담아두신 모든 음반을 삭제하시겠습니까?</h4>
-                        <YesBtn onClick={confirmClearCart}>네</YesBtn>
-                        <NoBtn onClick={cancelClearCart}>아니요</NoBtn>
-                    </ModalContent>
-                </Modal>
-            )}
-        </Body>
+            <Header>
+                <h2>UMC PlayList</h2>
+                <Cart>
+                    <Carticon>
+                        <CartIcon />
+                    </Carticon>
+                    <TotalCnt>{amount}</TotalCnt>
+                </Cart>
+            </Header>
+            <Body>
+                {cartItems.length === 0 ? (
+                    <p>고객님이 좋아하는 음반을 담아보세요~!</p>
+                ) : (
+                    <>
+                        <h2>당신이 선택한 음반</h2>
+                        {cartItems.map((song) => (
+                            <Music key={song.id}>
+                                <Img src={song.img} alt={song.title} />
+                                <Info>
+                                <Title>{song.title} | {song.singer} </Title>
+                                    <Price>￦ {song.price}</Price>
+                                </Info>
+                                <CountDiv>
+                                    <UpdownBtn onClick={() => increase(song.id)}>
+                                        <ChevronUp />
+                                    </UpdownBtn>
+                                    {song.amount}
+                                    <UpdownBtn onClick={() => decrease(song.id)}>
+                                        <ChevronDown />
+                                    </UpdownBtn>
+                                </CountDiv>
+                            </Music>
+                        ))}
+                        <hr />
+                        <PriceDiv>
+                            <p>총 가격 </p>
+                            <p>￦ {total}</p>
+                        </PriceDiv>
+                        <ClearBtn onClick={handleClearCart}>장바구니 초기화</ClearBtn>
+                    </>
+                )}
+                {isOpen && (
+                    <Modal>
+                        <ModalContent>
+                            <h4>담아두신 모든 음반을 삭제하시겠습니까?</h4>
+                            <YesBtn onClick={confirmClearCart}>네</YesBtn>
+                            <NoBtn onClick={closeModal}>아니요</NoBtn>
+                        </ModalContent>
+                    </Modal>
+                )}
+            </Body>
         </>
     );
 }
+
 export default Playlist;
 
 const Header = styled.div`
