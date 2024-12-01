@@ -104,7 +104,8 @@ const LinkStyled = styled(Link)`
 `;
 
 const Nav = styled.div`
-    width: 100vw;
+    width: 100%;
+    height: 60px; /* Navbar 높이 고정 */
     display: flex;
     justify-content: space-between;
     background-color: #1e272e;
@@ -112,8 +113,10 @@ const Nav = styled.div`
     position: sticky;
     top: 0;
     z-index: 1;
-    padding: 12px;
+    padding: 0 12px; /* 수평 여백만 추가 */
+    box-sizing: border-box; /* 패딩 포함 크기 계산 */
 `;
+
 
 const SignDiv = styled.div`
     margin-right: 60px;
