@@ -3,8 +3,13 @@ import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const Navbar = () => {
-    const [user, setUser] = useState(null);
+interface User {
+    email: string;
+    nickname: string;
+}
+
+const Navbar: React.FC = () => {
+    const [user, setUser] = useState<User | null>(null); // 사용자 타입 정의
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -12,10 +17,10 @@ const Navbar = () => {
             const token = localStorage.getItem('accessToken');
             if (token) {
                 try {
-                    const response = await axios.get('http://localhost:3000/user/me', {
+                    const response = await axios.get<User>('http://localhost:3000/user/me', {
                         headers: {
-                            Authorization: `Bearer ${token}`
-                        }
+                            Authorization: `Bearer ${token}`,
+                        },
                     });
                     const nickname = response.data.email.split('@')[0];
                     setUser({ ...response.data, nickname });
@@ -30,7 +35,7 @@ const Navbar = () => {
         fetchUserData();
     }, []);
 
-    const handleLogout = () => {
+    const handleLogout = (): void => {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         setUser(null);
@@ -39,7 +44,9 @@ const Navbar = () => {
 
     return (
         <Nav>
-            <Logo><Linkk to={'/'}>YONGCHA</Linkk></Logo>
+            <Logo>
+                <LinkStyled to="/">YONGCHA</LinkStyled>
+            </Logo>
             <SignDiv>
                 {user ? (
                     <>
@@ -48,14 +55,20 @@ const Navbar = () => {
                     </>
                 ) : (
                     <>
-                        <Login><Linkk to={'/login'}>로그인</Linkk></Login>
-                        <Join><Linkk to={'/signup'}>회원가입</Linkk></Join>
+                        <Login>
+                            <LinkStyled to="/login">로그인</LinkStyled>
+                        </Login>
+                        <Join>
+                            <LinkStyled to="/signup">회원가입</LinkStyled>
+                        </Join>
                     </>
                 )}
             </SignDiv>
         </Nav>
     );
 };
+
+export default Navbar;
 
 const UserEmail = styled.span`
     color: #fff;
@@ -69,27 +82,25 @@ const LogoutButton = styled.button`
     cursor: pointer;
 `;
 
-export default Navbar;
-
 const Logo = styled.div`
     font-size: 26px;
     font-weight: bold;
     color: #333;
     margin-left: 20px;
     :visited {
-        color: #DC1767;
+        color: #dc1767;
         text-decoration: none;
     }
 `;
 
-const Linkk = styled(Link)`
+const LinkStyled = styled(Link)`
     font-weight: bold;
     color: white;
     :visited {
-        color: #DC1767;
+        color: #dc1767;
         text-decoration: none;
     }
-        text-decoration: none;
+    text-decoration: none;
 `;
 
 const Nav = styled.div`
@@ -118,15 +129,15 @@ const Login = styled.div`
     padding: 8px;
     border-radius: 7px;
     &:hover {
-    background-color: black;
+        background-color: black;
     }
 `;
 
 const Join = styled.div`
-    background-color: #DC1767;
+    background-color: #dc1767;
     border-radius: 7px;
     padding: 8px;
     &:hover {
-    background-color: lightcoral;
+        background-color: lightcoral;
     }
 `;

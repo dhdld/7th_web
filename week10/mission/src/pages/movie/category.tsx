@@ -6,16 +6,16 @@ const CategoryPage = () => {
         <Div>
         <Title>카테고리</Title>
         <Container>
-        <Category to={'/movies/now-playing'}>
+        <Category to='/movies/now-playing'>
         <p>현재 상영중인</p>
         </Category>
-        <Category to={'/movies/popular'}>
+        <Category to='/movies/popular'>
         <p>인기있는</p>
         </Category>
-        <Category to={'/movies/top-rated'}>
+        <Category to='/movies/top-rated'>
         <p>높은 평가를 받은</p>
         </Category>
-        <Category to={'/movies/up-coming'}>
+        <Category to='/movies/up-coming'>
         <p>개봉 예정중인</p>
         </Category> 
         </Container>

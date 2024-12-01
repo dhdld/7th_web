@@ -1,27 +1,32 @@
 import { useState, useEffect } from "react";
 
-function useForm({ initialValue, validate }) {
-    const [values, setValues] = useState(initialValue);
-    const [touched, setTouched] = useState({});
-    const [errors, setErrors] = useState({});
+interface UseFormProps<T> {
+    initialValue: T;
+    validate: (values: T) => Partial<T>;
+}
 
-    const handleChangeInput = (name, value) => {
+function useForm<T extends Record<string, any>>({ initialValue, validate }: UseFormProps<T>) {
+    const [values, setValues] = useState<T>(initialValue);
+    const [touched, setTouched] = useState<Partial<Record<keyof T, boolean>>>({});
+    const [errors, setErrors] = useState<Partial<T>>({});
+
+    const handleChangeInput = (name: keyof T, value: string) => {
         setValues((prevValues) => ({
             ...prevValues,
             [name]: value,
         }));
     };
 
-    const handleBlurInput = (name) => {
+    const handleBlurInput = (name: keyof T) => {
         setTouched((prevTouched) => ({
             ...prevTouched,
             [name]: true,
         }));
     };
 
-    const getTextInputProps = (name) => ({
-        value: values[name],
-        onChange: (e) => handleChangeInput(name, e.target.value),
+    const getTextInputProps = (name: keyof T) => ({
+        value: values[name] ?? "",
+        onChange: (e: React.ChangeEvent<HTMLInputElement>) => handleChangeInput(name, e.target.value),
         onBlur: () => handleBlurInput(name),
     });
 

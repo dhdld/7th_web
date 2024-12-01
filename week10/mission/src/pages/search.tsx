@@ -1,40 +1,39 @@
-import { useState } from 'react';
+import { useState, ChangeEvent, KeyboardEvent } from 'react';
 import styled from 'styled-components';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import * as S from './style/search.style'
+import * as S from './style/search.style';
 import SearchMovieList from './movie/search-movie-list';
 
 const SearchPage = () => {
     const navigate = useNavigate();
-    const [searchValue, setSearchValue] = useState('');
+    const [searchValue, setSearchValue] = useState<string>('');
 
-    const [searchParams, setSearchParams] = useSearchParams({
-        mq: ''
-    })
+    const [searchParams] = useSearchParams({
+        mq: '',
+    });
 
-    const mq = searchParams.get('mq')
+    const mq = searchParams.get('mq');
 
-    const onChangeSearchValue = (e) =>{
-        setSearchValue(e.target.value)
-    }
-
-    const handleSearch = () => {
-        if (mq===searchValue) return;
-        navigate(`/search?mq=${searchValue}`)
+    const onChangeSearchValue = (e: ChangeEvent<HTMLInputElement>) => {
+        setSearchValue(e.target.value);
     };
 
-    const handleSearchWithKeyBoard = (e) =>{
-        if(e.key === 'Enter')
-            handleSearch()
-    }
+    const handleSearch = () => {
+        if (mq === searchValue) return;
+        navigate(`/search?mq=${searchValue}`);
+    };
+
+    const handleSearchWithKeyBoard = (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') handleSearch();
+    };
 
     return (
         <Container>
             <S.SearchContainer>
-                <SearchInput 
-                    type="text" 
-                    placeholder="영화 제목을 입력하세요" 
-                    value={searchValue} 
+                <SearchInput
+                    type="text"
+                    placeholder="영화 제목을 입력하세요"
+                    value={searchValue}
                     onChange={onChangeSearchValue}
                     onKeyDown={handleSearchWithKeyBoard}
                 />

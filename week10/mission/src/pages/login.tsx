@@ -5,19 +5,29 @@ import { validateLogin } from '../utils/validate';
 import { useMutation } from '@tanstack/react-query';
 import api from '../apis/tokenAPI';
 
+interface LoginValues {
+    email: string;
+    password: string;
+}
+
+interface LoginResponse {
+    accessToken: string;
+    refreshToken: string;
+}
+
 const LoginPage = () => {
     const navigate = useNavigate();
 
-    const login = useForm({
+    const login = useForm<LoginValues>({
         initialValue: {
             email: '',
-            password: ''
+            password: '',
         },
-        validate: validateLogin
+        validate: validateLogin,
     });
 
     // useMutation으로 로그인 요청 처리
-    const mutation = useMutation({
+    const mutation = useMutation<LoginResponse, any, LoginValues>({
         mutationFn: (data) => api.post('/auth/login', data),
         onSuccess: (data) => {
             console.log('로그인 성공:', data);
@@ -25,7 +35,7 @@ const LoginPage = () => {
             localStorage.setItem('refreshToken', data.refreshToken);
             navigate('/');
         },
-        onError: (error) => {
+        onError: (error: any) => {
             if (error.response) {
                 console.error('로그인 실패:', error.response.data.message);
             } else if (error.request) {
@@ -36,7 +46,7 @@ const LoginPage = () => {
         },
     });
 
-    const onSubmit = (e) => {
+    const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (Object.keys(login.errors).length === 0) {
             const payload = {
@@ -51,17 +61,17 @@ const LoginPage = () => {
         <Container>
             <Text>로그인</Text>
             <Form onSubmit={onSubmit}>
-                <Input 
-                    type="text" 
-                    placeholder="이메일을 입력해주세요!" 
-                    {...login.getTextInputProps('email')} 
+                <Input
+                    type="text"
+                    placeholder="이메일을 입력해주세요!"
+                    {...login.getTextInputProps('email')}
                 />
                 {login.touched.email && login.errors.email && <ErrMsg>{login.errors.email}</ErrMsg>}
 
-                <Input 
-                    type="password" 
-                    placeholder="비밀번호를 입력해주세요!" 
-                    {...login.getTextInputProps('password')} 
+                <Input
+                    type="password"
+                    placeholder="비밀번호를 입력해주세요!"
+                    {...login.getTextInputProps('password')}
                 />
                 {login.touched.password && login.errors.password && <ErrMsg>{login.errors.password}</ErrMsg>}
 
@@ -70,7 +80,7 @@ const LoginPage = () => {
                     disabled={Object.keys(login.errors).length > 0}
                     style={{
                         backgroundColor: Object.keys(login.errors).length === 0 ? '#DC1767' : 'gray',
-                        cursor: Object.keys(login.errors).length === 0 ? 'pointer' : 'auto'
+                        cursor: Object.keys(login.errors).length === 0 ? 'pointer' : 'auto',
                     }}
                 >
                     로그인
